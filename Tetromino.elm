@@ -28,69 +28,67 @@ i =
 o : Tetromino
 o =
     { shape =
-        [ ( 0, 0 ), ( 1, 0 )
-        , ( 0, 1 ), ( 1, 1 )
+        [ ( 1, 1 ), ( 2, 1 )
+        , ( 1, 2 ), ( 2, 2 )
         ]
     , block = Block Color.yellow
-    , location = ( 4, 22 )
-    , anchor = ( 0.5, 0.5 )
+    , location = ( 3, 22 )
+    , anchor = ( 1.5, 1.5 )
     }
 
 t : Tetromino
 t =
     { shape =
-        [            ( -1, 0 )
-        , ( 0, -1 ), (  0, 0 ), ( 0, 1 )
+        [            ( 1, 2 )
+        , ( 0, 1 ), (  1, 1 ), ( 2, 1 )
         ]
     , block = Block Color.purple
-    , location = ( 4, 22 )
-    , anchor = ( 0, 0 )
+    , location = ( 3, 22 )
+    , anchor = ( 1, 1 )
     }
 
 s : Tetromino
 s =
     { shape =
-        [             (  0, 0 ), ( 0, 1 )
-        , ( -1, -1 ), ( -1, 0 )                
+        [           ( 1, 2 ), ( 2, 2 )
+        , ( 0, 1 ), ( 1, 1 )                
         ]
     , block = Block Color.green
-    , location = ( 4, 22 )
-    , anchor = ( 0, 0 )
+    , location = ( 3, 22 )
+    , anchor = ( 1, 1 )
     }
 
 z : Tetromino
 z =
     { shape =
-        [ ( 0, -1 )
-        , ( 0, 0 )
-        , ( -1, 0 )
-        , ( -1, 1 )
+        [ ( 0, 2 ), ( 1, 2 )
+        ,           ( 1, 1 ), ( 2, 1 )
         ]
     , block = Block Color.red
-    , location = ( 4, 22 )
-    , anchor = ( 0, 0 )
+    , location = ( 3, 22 )
+    , anchor = ( 1, 1 )
     }
 
 j : Tetromino
 j =
     { shape =
-        [ ( -1, -1 )
-        , (  0, -1 ), ( 0, 0 ), ( 0, 1 )
+        [ ( 0, 2 )
+        , ( 0, 1 ), ( 1, 1 ), ( 2, 1 )
         ]
     , block = Block Color.darkBlue
-    , location = ( 4, 22 )
-    , anchor = ( 0, 0 )
+    , location = ( 3, 22 )
+    , anchor = ( 1, 1 )
     }
 
 l: Tetromino
 l =
     { shape =
-        [                      ( -1, 1 )
-        , ( 0, -1 ), ( 0, 0 ), (  0, 1 )
+        [                     ( 2, 2 )
+        , ( 0, 1 ), ( 1, 1 ), ( 2, 1 )
         ]
     , block = Block Color.orange
-    , location = ( 4, 22 )
-    , anchor = ( 0, 0 )
+    , location = ( 3, 22 )
+    , anchor = ( 1, 1 )
     }
 
 kickLeft : Tetromino -> Tetromino
