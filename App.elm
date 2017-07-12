@@ -57,22 +57,22 @@ type Msg
 
 fall : Tetromino -> Tetromino
 fall tetromino =
-    { tetromino | location = sumLocation tetromino.location ( 1, 0 ) }
+    { tetromino | location = sumLocation tetromino.location ( 0, -1 ) }
 
 
 moveRight : Tetromino -> Tetromino
 moveRight tetromino =
-    { tetromino | location = sumLocation tetromino.location ( 0, 1 ) }
+    { tetromino | location = sumLocation tetromino.location ( 1, 0 ) }
 
 
 moveLeft : Tetromino -> Tetromino
 moveLeft tetromino =
-    { tetromino | location = sumLocation tetromino.location ( 0, -1 ) }
+    { tetromino | location = sumLocation tetromino.location ( -1, 0 ) }
 
 
 sumLocation : Location -> Location -> Location
-sumLocation ( r1, c1 ) ( r2, c2 ) =
-    ( r1 + r2, c1 + c2 )
+sumLocation ( c1, r1 ) ( c2, r2 ) =
+    ( c1 + c2, r1 + r2 )
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -122,7 +122,7 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch 
-        [ Time.every (75 * millisecond) Tick
+        [ Time.every (100 * millisecond) Tick
         , Keyboard.downs KeyMsg]
 
 
@@ -132,8 +132,8 @@ subscriptions model =
 renderBoard : Board -> Svg msg
 renderBoard board =
     let
-        toRect ( row, col ) block =
-            Block.render block ( row, col )
+        toRect ( col, row ) block =
+            Block.render block ( col, row )
     in
     Svg.g [] (Board.background :: Dict.values (Dict.map toRect board))
 

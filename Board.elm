@@ -90,11 +90,11 @@ isValid board tetromino =
 isOutOfBounds : Board -> Tetromino -> Bool
 isOutOfBounds board tetromino =
     let
-        ( row, col ) =
+        ( col, row ) =
             tetromino.location
 
-        outOfBounds ( blockRow, blockCol ) =
-            ((blockRow + row + 1) > rows) || ((blockCol + col) >= cols) || ((blockRow + row) < -2) || ((blockCol + col) < 0)
+        outOfBounds ( blockCol, blockRow ) =
+            ((blockRow + row) < 0) || ((blockCol + col) >= cols) || ((blockRow + row) > 26) || ((blockCol + col) < 0)
     in
     List.foldl (||) False (List.map outOfBounds tetromino.shape)
 
@@ -102,11 +102,11 @@ isOutOfBounds board tetromino =
 isIntersecting : Board -> Tetromino -> Bool
 isIntersecting board tetromino =
     let
-        ( row, col ) =
+        ( col, row ) =
             tetromino.location
 
-        blockLocation ( blockRow, blockCol ) =
-            ( blockRow + row, blockCol + col )
+        blockLocation ( blockCol, blockRow ) =
+            ( blockCol + col, blockRow + row )
 
         boardSet =
             Set.fromList (Dict.keys board)
@@ -120,11 +120,11 @@ isIntersecting board tetromino =
 addTetromino : Board -> Tetromino -> Board
 addTetromino board tetromino =
     let
-        ( row, col ) =
+        ( col, row ) =
             tetromino.location
 
-        blockWithLocation block ( blockRow, blockCol ) =
-            ( ( blockRow + row, blockCol + col ), block )
+        blockWithLocation block ( blockCol, blockRow ) =
+            ( ( blockCol + col, blockRow + row ), block )
     in
     Dict.union (Dict.fromList (List.map (blockWithLocation tetromino.block) tetromino.shape)) board
 
@@ -133,7 +133,7 @@ checkRow : Int -> Board -> Bool
 checkRow row board =
     let
         blocks =
-            Dict.filter (\( r, _ ) _ -> r == row) board
+            Dict.filter (\( _, r ) _ -> r == row) board
     in
     Dict.size blocks == cols
 
@@ -141,11 +141,11 @@ checkRow row board =
 clearRow : Int -> Board -> Board
 clearRow row board =
     let
-        shift ( r, c ) block newBoard =
-            if r < row then
-                Dict.insert ( r + 1, c ) block newBoard
-            else if r > row then
-                Dict.insert ( r, c ) block newBoard
+        shift ( c, r ) block newBoard =
+            if r > row then
+                Dict.insert ( c, r - 1 ) block newBoard
+            else if r < row then
+                Dict.insert ( c, r ) block newBoard
             else
                 newBoard
     in
@@ -159,14 +159,14 @@ clearLines board =
             Maybe.withDefault 0 (Dict.get n baseLineScores)
 
         clearLine row n newBoard =
-            if row == 0 then
+            if row == rows then
                 ( n, newBoard )
             else if checkRow row newBoard then
-                clearLine row (n + 1) (clearRow row newBoard)
+                clearLine row (n - 1) (clearRow row newBoard)
             else
-                clearLine (row - 1) n newBoard
+                clearLine (row + 1) n newBoard
 
         ( n, newBoard ) =
-            clearLine 21 0 board
+            clearLine 0 0 board
     in
     ( score n, newBoard )

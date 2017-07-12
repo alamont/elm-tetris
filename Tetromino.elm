@@ -18,14 +18,11 @@ type alias Tetromino =
 i : Tetromino
 i =
     { shape =
-        [ (  1, 0 )
-        , (  0, 0 )
-        , ( -1, 0 )
-        , ( -2, 0 )
+        [ ( 0, 2 ), (  1, 2 ), ( 2, 2 ), ( 3, 2 )
         ]
     , block = Block Color.lightBlue
-    , location = ( 0, 4 )
-    , anchor = ( 0, 0 )
+    , location = ( 3, 23 )
+    , anchor = ( 1.5, 1.5 )
     }
     
 o : Tetromino
@@ -35,7 +32,7 @@ o =
         , ( 0, 1 ), ( 1, 1 )
         ]
     , block = Block Color.yellow
-    , location = ( 0, 4 )
+    , location = ( 4, 22 )
     , anchor = ( 0.5, 0.5 )
     }
 
@@ -46,7 +43,7 @@ t =
         , ( 0, -1 ), (  0, 0 ), ( 0, 1 )
         ]
     , block = Block Color.purple
-    , location = ( 0, 4 )
+    , location = ( 4, 22 )
     , anchor = ( 0, 0 )
     }
 
@@ -57,7 +54,7 @@ s =
         , ( -1, -1 ), ( -1, 0 )                
         ]
     , block = Block Color.green
-    , location = ( 0, 4 )
+    , location = ( 4, 22 )
     , anchor = ( 0, 0 )
     }
 
@@ -70,7 +67,7 @@ z =
         , ( -1, 1 )
         ]
     , block = Block Color.red
-    , location = ( 0, 4 )
+    , location = ( 4, 22 )
     , anchor = ( 0, 0 )
     }
 
@@ -81,7 +78,7 @@ j =
         , (  0, -1 ), ( 0, 0 ), ( 0, 1 )
         ]
     , block = Block Color.darkBlue
-    , location = ( 0, 4 )
+    , location = ( 4, 22 )
     , anchor = ( 0, 0 )
     }
 
@@ -92,29 +89,55 @@ l =
         , ( 0, -1 ), ( 0, 0 ), (  0, 1 )
         ]
     , block = Block Color.orange
-    , location = ( 0, 4 )
+    , location = ( 4, 22 )
     , anchor = ( 0, 0 )
     }
 
+kickLeft : Tetromino -> Tetromino
+kickLeft tetromino =
+    let
+        (col, row) = tetromino.location
+        maxCol = List.maximum (List.map (\(_, c) -> c + col) tetromino.shape)
+        shiftCols = (Maybe.withDefault 0 maxCol) - 9
+    in
+        if shiftCols > 0 then
+            { tetromino | location = (row, col - shiftCols)}
+        else
+            tetromino
+
+kickRight : Tetromino -> Tetromino
+kickRight tetromino =
+    let
+        (col, row) = tetromino.location
+        minCol = List.minimum (List.map (\(c, _) -> c + col) tetromino.shape)
+        shiftCols = (Maybe.withDefault 0 minCol)
+    in
+        if shiftCols < 0 then
+            { tetromino | location = (row, col - shiftCols)}
+        else
+            tetromino
+
+
+-- Should use SRS instead (https://tetris.wiki/SRS)
 rotate : Int -> Tetromino -> Tetromino
 rotate d tetromino =
     let
-        (rc, cc) = tetromino.anchor        
-        rotLoc (row, col) =
-            ( round (-((toFloat col) - cc) * (toFloat d) + rc)
-            , round ( ((toFloat row) - rc) * (toFloat d) + cc)
+        (cc, rc) = tetromino.anchor        
+        rotLoc (col, row) =
+            ( round (-((toFloat row) - rc) * (toFloat d) + cc)
+            , round ( ((toFloat col) - cc) * (toFloat d) + rc)
             )
         newShape = List.map rotLoc tetromino.shape
     in
-        { tetromino | shape = newShape }
+        { tetromino | shape = newShape } |> kickLeft |> kickRight
     
 
 render : Tetromino -> Svg msg
 render tetromino =
     let 
-        ( row, col ) =
+        ( col, row ) =
             tetromino.location
-        blockLocation (blockRow, blockCol) = ((blockRow + row), (blockCol + col))
+        blockLocation (blockCol, blockRow) = ( (blockCol + col), (blockRow + row))
     in
         Svg.g 
             [] (List.map (Block.render tetromino.block) (List.map blockLocation tetromino.shape))
