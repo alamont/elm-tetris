@@ -17,37 +17,75 @@ type alias Tetromino =
 i : Tetromino
 i =
     { shape =
-        [ ( 1, 0 )
-        , ( 0, 0 )
+        [ (  1, 0 )
+        , (  0, 0 )
         , ( -1, 0 )
         , ( -2, 0 )
         ]
     , block = Block Color.lightBlue
-    , location = ( 0, 0 )
+    , location = ( 0, 4 )
     }
     
 o : Tetromino
 o =
     { shape =
-        [ ( 0, 0 )
-        , ( 0, 1 )
-        , ( 1, 0 )
-        , ( 1, 1 )
+        [ ( 0, 0 ), ( 1, 0 )
+        , ( 0, 1 ), ( 1, 1 )
         ]
     , block = Block Color.yellow
-    , location = ( 0, 0 )
+    , location = ( 0, 4 )
     }
 
 t : Tetromino
 t =
     { shape =
+        [            ( -1, 0 )
+        , ( 0, -1 ), (  0, 0 ), ( 0, 1 )
+        ]
+    , block = Block Color.purple
+    , location = ( 0, 4 )
+    }
+
+s : Tetromino
+s =
+    { shape =
+        [             (  0, 0 ), ( 0, 1 )
+        , ( -1, -1 ), ( -1, 0 )                
+        ]
+    , block = Block Color.green
+    , location = ( 0, 4 )
+    }
+
+z : Tetromino
+z =
+    { shape =
         [ ( 0, -1 )
         , ( 0, 0 )
         , ( -1, 0 )
-        , ( 0, 1 )
+        , ( -1, 1 )
         ]
-    , block = Block Color.purple
-    , location = ( 0, 1 )
+    , block = Block Color.red
+    , location = ( 0, 4 )
+    }
+
+j : Tetromino
+j =
+    { shape =
+        [ ( -1, -1 )
+        , (  0, -1 ), ( 0, 0 ), ( 0, 1 )
+        ]
+    , block = Block Color.darkBlue
+    , location = ( 0, 4 )
+    }
+
+l: Tetromino
+l =
+    { shape =
+        [                      ( -1, 1 )
+        , ( 0, -1 ), ( 0, 0 ), (  0, 1 )
+        ]
+    , block = Block Color.orange
+    , location = ( 0, 4 )
     }
 
 render : Tetromino -> Svg msg

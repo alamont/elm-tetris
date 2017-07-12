@@ -30,9 +30,15 @@ type alias Location =
 
 model : Model
 model =
-    { board = Board.testBoard
-    , falling = Tetromino.t
-    , bag = [Tetromino.i, Tetromino.o, Tetromino.i, Tetromino.o]
+    { board = Dict.empty --Board.testBoard
+    , falling = Tetromino.i
+    , bag = [ Tetromino.o            
+            , Tetromino.t
+            , Tetromino.s
+            , Tetromino.z
+            , Tetromino.j
+            , Tetromino.l
+            ]
     , score = 0
     }
 
