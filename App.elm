@@ -105,7 +105,16 @@ update msg model =
                         ({ model | falling = moveLeft model.falling }, Cmd.none)
                     else
                         (model, Cmd.none)
-
+                90 ->
+                    if Board.isValid model.board (Tetromino.rotate -1 model.falling) then
+                        ({ model | falling = Tetromino.rotate -1 model.falling }, Cmd.none)
+                    else
+                        (model, Cmd.none)
+                88 ->
+                    if Board.isValid model.board (Tetromino.rotate 1 model.falling) then
+                        ({ model | falling = Tetromino.rotate 1 model.falling }, Cmd.none)
+                    else
+                        (model, Cmd.none)
                 _ ->
                     (model, Cmd.none)
 
@@ -142,7 +151,9 @@ view model =
         [ svg
             [ width w, height h, viewBox ("0 0 " ++ (Block.size * Board.cols |> toString) ++ " " ++ (Block.size * Board.rows |> toString)) ]
             ([ renderBoard model.board ] ++ [Tetromino.render model.falling])
-           , Html.text (toString model.score)
+        , div []
+            [ Html.text (toString model.score)
+            ]
         ]
 
 

@@ -12,6 +12,7 @@ type alias Tetromino =
     { shape : List Location
     , block : Block
     , location : Location
+    , anchor : (Float, Float)
     }
 
 i : Tetromino
@@ -24,6 +25,7 @@ i =
         ]
     , block = Block Color.lightBlue
     , location = ( 0, 4 )
+    , anchor = ( 0, 0 )
     }
     
 o : Tetromino
@@ -34,6 +36,7 @@ o =
         ]
     , block = Block Color.yellow
     , location = ( 0, 4 )
+    , anchor = ( 0.5, 0.5 )
     }
 
 t : Tetromino
@@ -44,6 +47,7 @@ t =
         ]
     , block = Block Color.purple
     , location = ( 0, 4 )
+    , anchor = ( 0, 0 )
     }
 
 s : Tetromino
@@ -54,6 +58,7 @@ s =
         ]
     , block = Block Color.green
     , location = ( 0, 4 )
+    , anchor = ( 0, 0 )
     }
 
 z : Tetromino
@@ -66,6 +71,7 @@ z =
         ]
     , block = Block Color.red
     , location = ( 0, 4 )
+    , anchor = ( 0, 0 )
     }
 
 j : Tetromino
@@ -76,6 +82,7 @@ j =
         ]
     , block = Block Color.darkBlue
     , location = ( 0, 4 )
+    , anchor = ( 0, 0 )
     }
 
 l: Tetromino
@@ -86,7 +93,21 @@ l =
         ]
     , block = Block Color.orange
     , location = ( 0, 4 )
+    , anchor = ( 0, 0 )
     }
+
+rotate : Int -> Tetromino -> Tetromino
+rotate d tetromino =
+    let
+        (rc, cc) = tetromino.anchor        
+        rotLoc (row, col) =
+            ( round (-((toFloat col) - cc) * (toFloat d) + rc)
+            , round ( ((toFloat row) - rc) * (toFloat d) + cc)
+            )
+        newShape = List.map rotLoc tetromino.shape
+    in
+        { tetromino | shape = newShape }
+    
 
 render : Tetromino -> Svg msg
 render tetromino =
