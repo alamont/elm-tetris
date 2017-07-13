@@ -82,6 +82,11 @@ background =
         []
 
 
+sumLocation : Location -> Location -> Location
+sumLocation ( c1, r1 ) ( c2, r2 ) =
+    ( c1 + c2, r1 + r2 )
+
+
 isValid : Board -> Tetromino -> Bool
 isValid board tetromino =
     not (isOutOfBounds board tetromino) && not (isIntersecting board tetromino)
@@ -115,6 +120,70 @@ isIntersecting board tetromino =
             Set.fromList (List.map blockLocation tetromino.shape)
     in
     not (Set.isEmpty (Set.intersect boardSet tetrominoSet))
+
+
+rotateWithOffset : Int -> Location -> Tetromino -> Tetromino
+rotateWithOffset rot offset tetromino =
+    let
+        newTetromino =
+            Tetromino.rotate rot tetromino
+    in
+    { newTetromino | location = sumLocation newTetromino.location offset }
+
+kickData_i =
+    Dict.fromList
+        [ ( (  0,  1 ), [ ( 0, 0 ), ( -2, 0 ), (  1, 0 ), ( -2, -1 ), (  1,  2 ) ] )
+        , ( (  1,  0 ), [ ( 0, 0 ), (  2, 0 ), ( -1, 0 ), (  2,  1 ), ( -1, -2 ) ] )
+        , ( (  1,  2 ), [ ( 0, 0 ), ( -1, 0 ), (  2, 0 ), ( -1,  2 ), (  2, -1 ) ] )
+        , ( (  2,  1 ), [ ( 0, 0 ), (  1, 0 ), ( -2, 0 ), (  1, -2 ), ( -2,  1 ) ] )
+        , ( (  2, -1 ), [ ( 0, 0 ), (  2, 0 ), ( -1, 0 ), (  2,  1 ), ( -1, -2 ) ] )
+        , ( ( -1,  2 ), [ ( 0, 0 ), ( -2, 0 ), (  1, 0 ), ( -2, -1 ), (  1,  2 ) ] )
+        , ( ( -1,  0 ), [ ( 0, 0 ), (  1, 0 ), ( -2, 0 ), (  1, -2 ), ( -2,  1 ) ] )
+        , ( (  0, -1 ), [ ( 0, 0 ), ( -1, 0 ), (  2, 0 ), ( -1,  2 ), (  2, -1 ) ] )
+        ]
+
+kickData_other =
+    Dict.fromList
+        [ ( (  0,  1 ), [ ( 0, 0 ), ( -1, 0 ), ( -1,  1 ), ( 0,  2 ), ( -1, -2 ) ] )
+        , ( (  1,  0 ), [ ( 0, 0 ), (  1, 0 ), (  1, -1 ), ( 0,  2 ), (  1,  2 ) ] )
+        , ( (  1,  2 ), [ ( 0, 0 ), (  1, 0 ), (  1, -1 ), ( 0,  2 ), (  1,  2 ) ] )
+        , ( (  2,  1 ), [ ( 0, 0 ), ( -1, 0 ), ( -1,  1 ), ( 0, -2 ), ( -1, -2 ) ] )
+        , ( (  2, -1 ), [ ( 0, 0 ), (  1, 0 ), (  1,  1 ), ( 0, -2 ), (  1, -2 ) ] )
+        , ( ( -1,  2 ), [ ( 0, 0 ), ( -1, 0 ), ( -1, -1 ), ( 0,  2 ), ( -1,  2 ) ] )
+        , ( ( -1,  0 ), [ ( 0, 0 ), ( -1, 0 ), ( -1, -1 ), ( 0,  2 ), ( -1,  2 ) ] )
+        , ( (  0, -1 ), [ ( 0, 0 ), (  1, 0 ), (  1,  1 ), ( 0, -2 ), (  1, -2 ) ] )
+        ]
+
+kickOffsets : ( Int, Int ) -> Tetromino -> List Location
+kickOffsets key tetromino =
+    let
+        kickData = 
+            case tetromino.t of
+                "i" ->
+                    kickData_i
+                _ ->
+                    kickData_other
+    in
+        Maybe.withDefault [( 0, 0 )] (Dict.get key kickData)
+
+rotateTetromino : Board -> Int -> Tetromino -> Tetromino
+rotateTetromino board rot tetromino =
+    let
+        offsets =
+            kickOffsets ( tetromino.rotation, Tetromino.addRotation tetromino.rotation rot ) tetromino
+
+        testRotation offset =
+            ( isValid board (rotateWithOffset rot offset tetromino), offset )
+
+        validRotation =
+            List.head (List.filter (\( valid, _ ) -> valid) (List.map testRotation offsets))
+    in
+    case validRotation of
+        Just ( _, offset ) ->
+            rotateWithOffset rot offset tetromino
+
+        Nothing ->
+            tetromino
 
 
 addTetromino : Board -> Tetromino -> Board

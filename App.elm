@@ -106,15 +106,9 @@ update msg model =
                     else
                         (model, Cmd.none)
                 90 ->
-                    if Board.isValid model.board (Tetromino.rotate -1 model.falling) then
-                        ({ model | falling = Tetromino.rotate -1 model.falling }, Cmd.none)
-                    else
-                        (model, Cmd.none)
+                    ({ model | falling = Board.rotateTetromino model.board -1 model.falling }, Cmd.none)
                 88 ->
-                    if Board.isValid model.board (Tetromino.rotate 1 model.falling) then
-                        ({ model | falling = Tetromino.rotate 1 model.falling }, Cmd.none)
-                    else
-                        (model, Cmd.none)
+                    ({ model | falling = Board.rotateTetromino model.board 1 model.falling }, Cmd.none)
                 _ ->
                     (model, Cmd.none)
 
@@ -122,7 +116,7 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch 
-        [ Time.every (100 * millisecond) Tick
+        [ Time.every (200 * millisecond) Tick
         , Keyboard.downs KeyMsg]
 
 

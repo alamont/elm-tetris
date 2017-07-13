@@ -8,11 +8,15 @@ import Svg.Attributes exposing (..)
 type alias Location =
     ( Int, Int )
 
+-- jlstz_wallkick_data = 
+
 type alias Tetromino =
     { shape : List Location
     , block : Block
     , location : Location
     , anchor : (Float, Float)
+    , rotation : Int
+    , t : String
     }
 
 i : Tetromino
@@ -22,7 +26,9 @@ i =
         ]
     , block = Block Color.lightBlue
     , location = ( 3, 23 )
+    , rotation = 0
     , anchor = ( 1.5, 1.5 )
+    , t = "i"
     }
     
 o : Tetromino
@@ -33,7 +39,9 @@ o =
         ]
     , block = Block Color.yellow
     , location = ( 3, 22 )
+    , rotation = 0
     , anchor = ( 1.5, 1.5 )
+    , t = "o"
     }
 
 t : Tetromino
@@ -44,7 +52,9 @@ t =
         ]
     , block = Block Color.purple
     , location = ( 3, 22 )
+    , rotation = 0
     , anchor = ( 1, 1 )
+    , t = "t"
     }
 
 s : Tetromino
@@ -55,7 +65,9 @@ s =
         ]
     , block = Block Color.green
     , location = ( 3, 22 )
+    , rotation = 0
     , anchor = ( 1, 1 )
+    , t = "s"
     }
 
 z : Tetromino
@@ -66,7 +78,9 @@ z =
         ]
     , block = Block Color.red
     , location = ( 3, 22 )
+    , rotation = 0
     , anchor = ( 1, 1 )
+    , t = "z"
     }
 
 j : Tetromino
@@ -77,7 +91,9 @@ j =
         ]
     , block = Block Color.darkBlue
     , location = ( 3, 22 )
+    , rotation = 0
     , anchor = ( 1, 1 )
+    , t = "j"
     }
 
 l: Tetromino
@@ -88,7 +104,9 @@ l =
         ]
     , block = Block Color.orange
     , location = ( 3, 22 )
+    , rotation = 0
     , anchor = ( 1, 1 )
+    , t = "l"
     }
 
 kickLeft : Tetromino -> Tetromino
@@ -115,6 +133,9 @@ kickRight tetromino =
         else
             tetromino
 
+-- wallKick : Tetromino -> Tetromino
+-- wallKick tetromino =
+    
 
 -- Should use SRS instead (https://tetris.wiki/SRS)
 rotate : Int -> Tetromino -> Tetromino
@@ -127,8 +148,22 @@ rotate d tetromino =
             )
         newShape = List.map rotLoc tetromino.shape
     in
-        { tetromino | shape = newShape } |> kickLeft |> kickRight
+        { tetromino | shape = newShape
+                    , rotation = addRotation tetromino.rotation d } |> kickLeft |> kickRight
     
+
+addRotation : Int -> Int -> Int
+addRotation orientation rot =
+    let 
+        newRotation = orientation + rot
+    in
+        if (newRotation >= 3) then
+            -1
+        else if (newRotation <= -2) then
+            1
+        else
+            newRotation
+            
 
 render : Tetromino -> Svg msg
 render tetromino =
