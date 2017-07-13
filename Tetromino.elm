@@ -109,34 +109,6 @@ l =
     , t = "l"
     }
 
-kickLeft : Tetromino -> Tetromino
-kickLeft tetromino =
-    let
-        (col, row) = tetromino.location
-        maxCol = List.maximum (List.map (\(_, c) -> c + col) tetromino.shape)
-        shiftCols = (Maybe.withDefault 0 maxCol) - 9
-    in
-        if shiftCols > 0 then
-            { tetromino | location = (row, col - shiftCols)}
-        else
-            tetromino
-
-kickRight : Tetromino -> Tetromino
-kickRight tetromino =
-    let
-        (col, row) = tetromino.location
-        minCol = List.minimum (List.map (\(c, _) -> c + col) tetromino.shape)
-        shiftCols = (Maybe.withDefault 0 minCol)
-    in
-        if shiftCols < 0 then
-            { tetromino | location = (row, col - shiftCols)}
-        else
-            tetromino
-
--- wallKick : Tetromino -> Tetromino
--- wallKick tetromino =
-    
-
 -- Should use SRS instead (https://tetris.wiki/SRS)
 rotate : Int -> Tetromino -> Tetromino
 rotate d tetromino =
