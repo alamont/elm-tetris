@@ -37,33 +37,6 @@ baseLineScores =
         ]
 
 
-testBoard : Board
-testBoard =
-    Dict.fromList
-        -- [ ( ( 20, 0 ), Block Color.red )
-        [ ( ( 20, 1 ), Block Color.green )
-        , ( ( 20, 2 ), Block Color.green )
-        , ( ( 20, 3 ), Block Color.green )
-        , ( ( 20, 4 ), Block Color.green )
-        , ( ( 20, 5 ), Block Color.green )
-        , ( ( 20, 6 ), Block Color.green )
-        , ( ( 20, 7 ), Block Color.green )
-        , ( ( 20, 8 ), Block Color.green )
-        , ( ( 20, 9 ), Block Color.green )
-
-        -- , ( ( 21, 0 ), Block Color.red )
-        , ( ( 21, 1 ), Block Color.green )
-        , ( ( 21, 2 ), Block Color.green )
-        , ( ( 21, 3 ), Block Color.green )
-        , ( ( 21, 4 ), Block Color.green )
-        , ( ( 21, 5 ), Block Color.green )
-        , ( ( 21, 6 ), Block Color.green )
-        , ( ( 21, 7 ), Block Color.green )
-        , ( ( 21, 8 ), Block Color.green )
-        , ( ( 21, 9 ), Block Color.green )
-        ]
-
-
 background : Svg msg
 background =
     let
@@ -130,6 +103,7 @@ rotateWithOffset rot offset tetromino =
     in
     { newTetromino | location = sumLocation newTetromino.location offset }
 
+
 kickData_i =
     Dict.fromList
         [ ( (  0,  1 ), [ ( 0, 0 ), ( -2, 0 ), (  1, 0 ), ( -2, -1 ), (  1,  2 ) ] )
@@ -154,17 +128,20 @@ kickData_other =
         , ( (  0, -1 ), [ ( 0, 0 ), (  1, 0 ), (  1,  1 ), ( 0, -2 ), (  1, -2 ) ] )
         ]
 
+
 kickOffsets : ( Int, Int ) -> Tetromino -> List Location
 kickOffsets key tetromino =
     let
-        kickData = 
+        kickData =
             case tetromino.t of
                 "i" ->
                     kickData_i
+
                 _ ->
                     kickData_other
     in
-        Maybe.withDefault [( 0, 0 )] (Dict.get key kickData)
+    Maybe.withDefault [ ( 0, 0 ) ] (Dict.get key kickData)
+
 
 rotateTetromino : Board -> Int -> Tetromino -> Tetromino
 rotateTetromino board rot tetromino =

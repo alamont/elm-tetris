@@ -4,6 +4,7 @@ import Block exposing (Block)
 import Color exposing (Color)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Array exposing (Array)
 
 type alias Location =
     ( Int, Int )
@@ -108,6 +109,9 @@ l =
     , anchor = ( 1, 1 )
     , t = "l"
     }
+
+tetrominos : Array Tetromino
+tetrominos = Array.fromList [i, o, t, s, z, j, l]
 
 -- Should use SRS instead (https://tetris.wiki/SRS)
 rotate : Int -> Tetromino -> Tetromino

@@ -11,6 +11,9 @@ import Svg.Attributes exposing (..)
 import Tetromino exposing (Tetromino)
 import Time exposing (Time, second, millisecond)
 import Keyboard
+import Random.Array exposing (..)
+import Random
+import Array exposing (Array)
 
 
 -- import Debug exposing (log)
@@ -28,23 +31,24 @@ type alias Location =
     ( Int, Int )
 
 
+bagSampler : Random.Generator (Maybe Tetromino)
+bagSampler = sample Tetromino.tetrominos
+
+initialBagSampler : Random.Generator (Array.Array (Maybe Tetromino))
+initialBagSampler = Random.Array.array 5 bagSampler
+
 model : Model
 model =
     { board = Dict.empty --Board.testBoard
     , falling = Tetromino.i
-    , bag = [ Tetromino.o            
-            , Tetromino.t
-            , Tetromino.s
-            , Tetromino.z
-            , Tetromino.j
-            , Tetromino.l
-            ]
+    , bag = []
     , score = 0
     }
 
 init : (Model, Cmd Msg)
 init =
-  (model, Cmd.none)
+    (model, Random.generate InitBag initialBagSampler)
+--   ({model | bag = Random.Array.array 5 bagSampler}, Cmd.none)
 
 
 
@@ -53,6 +57,8 @@ init =
 type Msg
     = Tick Time
     | KeyMsg Keyboard.KeyCode
+    | NewBagTetromino (Maybe Tetromino)
+    | InitBag (Array (Maybe Tetromino))
 
 
 fall : Tetromino -> Tetromino
@@ -90,7 +96,7 @@ update msg model =
                     , falling = Maybe.withDefault Tetromino.i (List.head model.bag)
                     , bag = Maybe.withDefault [Tetromino.i] (List.tail model.bag)
                     , score = model.score + score
-                }, Cmd.none)
+                }, Random.generate NewBagTetromino bagSampler)
 
         KeyMsg code ->
             case code of
@@ -110,7 +116,17 @@ update msg model =
                     ({ model | falling = Board.rotateTetromino model.board 1 model.falling }, Cmd.none)
                 _ ->
                     (model, Cmd.none)
-
+        NewBagTetromino newBagTetromino ->
+            let
+                tetromino =
+                    Maybe.withDefault Tetromino.i newBagTetromino
+            in
+            ({ model | bag = model.bag ++ [tetromino]}, Cmd.none)
+        InitBag initialBag ->
+            let
+                bag = List.map (Maybe.withDefault Tetromino.i) (Array.toList initialBag)
+            in
+            ({ model | bag = bag }, Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
