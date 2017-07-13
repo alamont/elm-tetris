@@ -115,13 +115,13 @@ rotate d tetromino =
     let
         (cc, rc) = tetromino.anchor        
         rotLoc (col, row) =
-            ( round (-((toFloat row) - rc) * (toFloat d) + cc)
-            , round ( ((toFloat col) - cc) * (toFloat d) + rc)
+            ( round (-((toFloat row) - rc) * (toFloat -d) + cc)
+            , round ( ((toFloat col) - cc) * (toFloat -d) + rc)
             )
         newShape = List.map rotLoc tetromino.shape
     in
         { tetromino | shape = newShape
-                    , rotation = addRotation tetromino.rotation d } |> kickLeft |> kickRight
+                    , rotation = addRotation tetromino.rotation d }
     
 
 addRotation : Int -> Int -> Int

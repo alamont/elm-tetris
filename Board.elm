@@ -231,7 +231,7 @@ clearLines board =
             if row == rows then
                 ( n, newBoard )
             else if checkRow row newBoard then
-                clearLine row (n - 1) (clearRow row newBoard)
+                clearLine row (n + 1) (clearRow row newBoard)
             else
                 clearLine (row + 1) n newBoard
 

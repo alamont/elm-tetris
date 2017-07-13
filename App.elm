@@ -99,7 +99,6 @@ update msg model =
                         ({ model | falling = moveRight model.falling }, Cmd.none)
                     else
                         (model, Cmd.none)
-
                 37 ->
                     if Board.isValid model.board (moveLeft model.falling) then
                         ({ model | falling = moveLeft model.falling }, Cmd.none)
@@ -116,7 +115,7 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch 
-        [ Time.every (200 * millisecond) Tick
+        [ Time.every (75 * millisecond) Tick
         , Keyboard.downs KeyMsg]
 
 
