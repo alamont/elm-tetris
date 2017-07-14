@@ -62,17 +62,17 @@ sumLocation ( c1, r1 ) ( c2, r2 ) =
 
 isValid : Board -> Tetromino -> Bool
 isValid board tetromino =
-    not (isOutOfBounds board tetromino) && not (isIntersecting board tetromino)
+    not (isOutOfBounds tetromino) && not (isIntersecting board tetromino)
 
 
-isOutOfBounds : Board -> Tetromino -> Bool
-isOutOfBounds board tetromino =
+isOutOfBounds : Tetromino -> Bool
+isOutOfBounds tetromino =
     let
         ( col, row ) =
             tetromino.location
 
         outOfBounds ( blockCol, blockRow ) =
-            ((blockRow + row) < 0) || ((blockCol + col) >= cols) || ((blockRow + row) > 26) || ((blockCol + col) < 0)
+            ((blockRow + row) < 0) || ((blockCol + col) >= cols) || ((blockRow + row) > 25) || ((blockCol + col) < 0)
     in
     List.foldl (||) False (List.map outOfBounds tetromino.shape)
 
@@ -94,6 +94,9 @@ isIntersecting board tetromino =
     in
     not (Set.isEmpty (Set.intersect boardSet tetrominoSet))
 
+gameOver : Board -> Bool
+gameOver board = 
+    List.foldl (||) False (Dict.values (Dict.map (\(col, row) _ -> row > rows) board))
 
 rotateWithOffset : Int -> Location -> Tetromino -> Tetromino
 rotateWithOffset rot offset tetromino =

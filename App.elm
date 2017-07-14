@@ -23,13 +23,18 @@ type alias Model =
     { board : Board
     , falling : Tetromino
     , bag : List Tetromino
-    , score: Int
+    , score : Int
+    , gamestate : Gamestate
     }
 
 
 type alias Location =
     ( Int, Int )
 
+type Gamestate 
+    = Stopped
+    | Playing
+    | Gameover
 
 bagSampler : Random.Generator (Maybe Tetromino)
 bagSampler = sample Tetromino.tetrominos
@@ -43,6 +48,7 @@ model =
     , falling = Tetromino.i
     , bag = []
     , score = 0
+    , gamestate = Stopped
     }
 
 init : (Model, Cmd Msg)
@@ -85,7 +91,9 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Tick newTime ->
-            if Board.isValid model.board (fall model.falling) then
+            if Board.gameOver model.board then
+                ( { model | gamestate = Gameover }, Cmd.none )
+            else if Board.isValid model.board (fall model.falling) then
                 ({ model | falling = fall model.falling }, Cmd.none)
             else
                 let
@@ -99,28 +107,36 @@ update msg model =
                 }, Random.generate NewBagTetromino bagSampler)
 
         KeyMsg code ->
-            case code of
-                39 ->
-                    if Board.isValid model.board (moveRight model.falling) then
-                        ({ model | falling = moveRight model.falling }, Cmd.none)
-                    else
+            if model.gamestate == Playing then
+                case code of
+                    39 ->
+                        if Board.isValid model.board (moveRight model.falling) then
+                            ({ model | falling = moveRight model.falling }, Cmd.none)
+                        else
+                            (model, Cmd.none)
+                    37 ->
+                        if Board.isValid model.board (moveLeft model.falling) then
+                            ({ model | falling = moveLeft model.falling }, Cmd.none)
+                        else
+                            (model, Cmd.none)
+                    40 ->
+                        if Board.isValid model.board (fall model.falling) then
+                            ({ model | falling = fall model.falling }, Cmd.none)
+                        else
+                            (model, Cmd.none)
+                    90 ->
+                        ({ model | falling = Board.rotateTetromino model.board -1 model.falling }, Cmd.none)
+                    88 ->
+                        ({ model | falling = Board.rotateTetromino model.board 1 model.falling }, Cmd.none)
+                    _ ->
                         (model, Cmd.none)
-                37 ->
-                    if Board.isValid model.board (moveLeft model.falling) then
-                        ({ model | falling = moveLeft model.falling }, Cmd.none)
-                    else
+            else
+                case code of
+                    32 ->
+                        ({ model | gamestate = Playing, board = Dict.empty }, Cmd.none)
+                    _ ->
                         (model, Cmd.none)
-                40 ->
-                    if Board.isValid model.board (fall model.falling) then
-                        ({ model | falling = fall model.falling }, Cmd.none)
-                    else
-                        (model, Cmd.none)
-                90 ->
-                    ({ model | falling = Board.rotateTetromino model.board -1 model.falling }, Cmd.none)
-                88 ->
-                    ({ model | falling = Board.rotateTetromino model.board 1 model.falling }, Cmd.none)
-                _ ->
-                    (model, Cmd.none)
+
         NewBagTetromino newBagTetromino ->
             let
                 tetromino =
@@ -135,9 +151,15 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
+    let
+        tickSub = 
+            if model.gamestate == Playing then
+                [Time.every (75 * millisecond) Tick]
+            else
+                []
+    in
     Sub.batch 
-        [ Time.every (75 * millisecond) Tick
-        , Keyboard.downs KeyMsg]
+        (tickSub ++ [Keyboard.downs KeyMsg])
 
 
 -- View
@@ -167,6 +189,9 @@ view model =
             ([ renderBoard model.board ] ++ [Tetromino.render model.falling])
         , div []
             [ Html.text (toString model.score)
+            ]
+        , div []
+            [ Html.text (toString model.gamestate)
             ]
         ]
 
