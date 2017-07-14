@@ -110,6 +110,11 @@ update msg model =
                         ({ model | falling = moveLeft model.falling }, Cmd.none)
                     else
                         (model, Cmd.none)
+                40 ->
+                    if Board.isValid model.board (fall model.falling) then
+                        ({ model | falling = fall model.falling }, Cmd.none)
+                    else
+                        (model, Cmd.none)
                 90 ->
                     ({ model | falling = Board.rotateTetromino model.board -1 model.falling }, Cmd.none)
                 88 ->
