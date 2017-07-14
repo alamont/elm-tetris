@@ -188,10 +188,16 @@ view model =
             [ width w, height h, viewBox ("0 0 " ++ (Block.size * Board.cols |> toString) ++ " " ++ (Block.size * Board.rows |> toString)) ]
             ([ renderBoard model.board ] ++ [Tetromino.render model.falling])
         , div []
-            [ Html.text (toString model.score)
+            [ h3 [] [Html.text "Score"]
+            , Html.text (toString model.score)
             ]
         , div []
-            [ Html.text (toString model.gamestate)
+            [ h3 [] [Html.text "Gamestate"]
+            , Html.text (toString model.gamestate)
+            ]
+        , div []
+            [ h3 [] [Html.text "Bag"]
+            , Html.text (toString (List.map (\tetromino -> tetromino.t) model.bag))
             ]
         ]
 
